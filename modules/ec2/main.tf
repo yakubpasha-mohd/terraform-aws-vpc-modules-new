@@ -93,76 +93,24 @@ data "aws_availability_zones" "available" {
   state = "available"
 }
 
-########### Private Ec2 Instance (module) ##############
+########### Private EC2 Instance ##############
 
-# Look up the VPC by id so we can get its CIDR for SG rules
-data "aws_vpc" "selected" {
-  id = var.vpc_id
-}
-
-# Private Security Group
-resource "aws_security_group" "private_sg" {
-  name        = "${var.project_name}-private-sg"
-  description = "Private SG — allow SSH from bastion IP and allow intra-VPC traffic"
-  vpc_id      = var.vpc_id
-
-  tags = merge(
-    var.tags,
-    {
-      Name = "${var.project_name}-private-sg"
-    }
-  )
-}
-
-# Allow SSH from Bastion public IP (restrict to port 22)
-resource "aws_security_group_rule" "allow_ssh_from_bastion" {
-  type              = "ingress"
-  from_port         = 22
-  to_port           = 22
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]             # use bastion_ip var (CIDR /32)
-  security_group_id = aws_security_group.private_sg.id
-  description       = "Allow SSH from bastion IP"
-}
-
-# Allow all inbound traffic from the VPC CIDR (intra-vpc comms)
-resource "aws_security_group_rule" "allow_intra_vpc" {
-  type              = "ingress"
-  from_port         = 0
-  to_port           = 0
-  protocol          = "-1"
-  cidr_blocks       = [data.aws_vpc.selected.cidr_block]   # data lookup now exists
-  security_group_id = aws_security_group.private_sg.id
-  description       = "Allow all traffic within the VPC"
-}
-
-# Allow all outbound (egress)
-resource "aws_security_group_rule" "allow_all_outbound" {
-  type              = "egress"
-  from_port         = 0
-  to_port           = 0
-  protocol          = "-1"
-  cidr_blocks       = ["0.0.0.0/0"]
-  ipv6_cidr_blocks  = ["::/0"]
-  security_group_id = aws_security_group.private_sg.id
-  description       = "Allow all outbound"
-}
-
-# Private EC2 instance (no public IP)
 resource "aws_instance" "private_ec2" {
-  ami                         = var.ami
+  ami                         = var.ami                    # use same var.ami for consistency
   instance_type               = var.instance_type
-  subnet_id                   = var.subnet_id           # use subnet_id var (was private_subnet1)
-  vpc_security_group_ids      = [aws_security_group.private_sg.id]
-  associate_public_ip_address = false
+  subnet_id                   = var.priv_subnet_id
+  vpc_security_group_ids      = local.final_security_group_ids
+  associate_public_ip_address = false                      # ensure no public IP
   key_name                    = var.key_name != "" ? var.key_name : null
 
-  tags = merge(
-    var.tags,
-    {
-      Name = "${var.project_name}-private-ec2"
-    }
-  )
+  root_block_device {
+    volume_size           = var.root_volume_size
+    volume_type           = var.root_volume_type
+    delete_on_termination = var.delete_on_termination
+  }
 
-  # user_data, iam_instance_profile, etc. can be added here
+  tags = merge(var.tags, {
+    Name        = "${var.project_name}-private-ec2"
+    Environment = var.environment
+  })
 }

@@ -18,6 +18,12 @@ variable "subnet_id" {
   type        = string
 }
 
+# rename if you haven't already
+variable "priv_subnet_id" {
+  description = "Private Subnet ID to launch private instance into"
+  type        = string
+}
+
 variable "vpc_id" {
   description = "VPC ID (required if module should create a default security group)"
   type        = string

@@ -1,7 +1,7 @@
 {
   "version": 4,
   "terraform_version": "1.9.8",
-  "serial": 28,
+  "serial": 27,
   "lineage": "895fd56b-f670-c045-bff9-67115280f17e",
   "outputs": {
     "region": {
@@ -180,7 +180,7 @@
                 "encrypted": false,
                 "iops": 3000,
                 "kms_key_id": "",
-                "tags": {},
+                "tags": null,
                 "tags_all": {},
                 "throughput": 125,
                 "volume_id": "vol-016522af5e8c6322d",
