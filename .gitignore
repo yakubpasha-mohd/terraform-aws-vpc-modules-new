@@ -2,3 +2,4 @@
 #envs/dev/.terraform.lock.hcl
 **/.terraform/
 **/.terraform.lock.hcl
+**/terraform.state
