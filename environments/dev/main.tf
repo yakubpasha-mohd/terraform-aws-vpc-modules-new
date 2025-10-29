@@ -42,7 +42,7 @@ module "ec2" {
   instance_type  = "t3.micro"
   subnet_id      = module.vpc.public_subnet_id
   vpc_id         = module.vpc.vpc_id
-  key_name       = "my-keypair"            # optional
+  key_name       = var.key-name         # optional
   associate_public_ip = true
   project_name   = var.project_name
   environment    = var.environment

@@ -44,6 +44,13 @@ variable "private_subnet_cidr" {
   default     = "10.0.2.0/24"
 }
 
+
+variable "key-name" {
+  description = "Environment name (dev / staging / prod)"
+  type        = string
+  default     = "aws-general-key"
+}
+
 variable "tags" {
   description = "Map of tags applied to resources (merged by module)"
   type        = map(string)
