@@ -132,11 +132,7 @@ variable "data_volume_device_name" {
   default     = "/dev/sdh"
 }
 
-variable "iam_instance_profile" {
-  description = "IAM instance profile name to attach (optional)"
-  type        = string
-  default     = ""
-}
+
 
 variable "create_before_destroy" {
   description = "Whether to create before destroy for the EC2 resource (avoid downtime during replacement). Set false for limited quota."

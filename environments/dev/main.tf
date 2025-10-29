@@ -36,7 +36,7 @@ module "vpc" {
   tags = merge(var.tags, { Environment = var.environment })
 }
 
-module "ec2" {
+module "ec2-public" {
   source         = "../../modules/ec2"
   ami            = "ami-0c02fb55956c7d316" # change to an up-to-date AMI for your region
   instance_type  = "t3.micro"
@@ -55,3 +55,17 @@ module "ec2" {
 }
 
 
+# Private EC2 (in private subnet)
+module "ec2_private" {
+  source               = "../../modules/ec2"
+  ami                  = "ami-0c02fb55956c7d316"
+  instance_type        = "t3.micro"
+  subnet_id            = module.vpc.private_subnet_id    # ensure this output exists
+  vpc_id               = module.vpc.vpc_id
+  key_name             = var.key-name
+  associate_public_ip  = false                           # private instance should not have public IP
+  project_name         = var.project_name
+  environment          = var.environment
+  tags                 = merge(var.tags, { Role = "app", Tier = "private" })
+  create_data_volume   = false
+}

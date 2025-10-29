@@ -70,3 +70,22 @@ resource "aws_route_table_association" "public_assoc" {
   subnet_id      = aws_subnet.public_subnet.id
   route_table_id = aws_route_table.public.id
 }
+
+#########Private Route Tables#################
+
+# Public Route Table
+resource "aws_route_table" "Private-RT1" {
+  vpc_id = aws_vpc.this.id
+
+  tags = merge(
+    var.tags,
+    { Name = "${var.project_name}-Private-RT" }
+  )
+}
+
+
+# Associate Private Subnet with Route Table
+resource "aws_route_table_association" "private_assoc" {
+  subnet_id      = aws_subnet.private_subnet.id
+  route_table_id = aws_route_table.Private-RT1.id
+}
