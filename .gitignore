@@ -1,0 +1,4 @@
+#envs/dev/.terraform/
+#envs/dev/.terraform.lock.hcl
+**/.terraform/*
+
